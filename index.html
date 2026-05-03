@@ -3,1107 +3,1365 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROBOSTI — Industrial Valve Automation</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans+Condensed:wght@300;400;600;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>ROBOSTI — Actuator Configurator</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans+Condensed:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
   --black: #080808;
   --dark: #0f0f0f;
   --panel: #141414;
-  --border: #222222;
-  --border-light: #2a2a2a;
+  --panel2: #1a1a1a;
+  --border: #222;
+  --border2: #2a2a2a;
   --orange: #d45a00;
-  --orange-dim: rgba(212,90,0,0.15);
+  --orange-dim: rgba(212,90,0,0.12);
+  --green: #2d7a3a;
+  --green-dim: rgba(45,122,58,0.12);
   --white: #e8e8e8;
   --gray: #666;
-  --gray-light: #999;
+  --gray2: #999;
   --mono: 'IBM Plex Mono', monospace;
   --cond: 'IBM Plex Sans Condensed', sans-serif;
   --sans: 'IBM Plex Sans', sans-serif;
 }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--sans); background:var(--black); color:var(--white); min-height:100vh; }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-
-body {
-  font-family: var(--sans);
-  background: var(--black);
-  color: var(--white);
-  overflow-x: hidden;
-  line-height: 1.6;
+/* HEADER */
+.header {
+  background:var(--dark);
+  border-bottom:1px solid var(--border);
+  padding:16px 32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
 }
-
-/* LANG */
-.lang-toggle {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 1000;
-  display: flex;
-  border-left: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.lang-btn {
-  padding: 8px 16px;
-  font-family: var(--mono);
-  font-size: 11px;
-  border: none;
-  cursor: pointer;
-  background: var(--dark);
-  color: var(--gray);
-  transition: all 0.15s;
-  border-right: 1px solid var(--border);
-}
-
-.lang-btn.active {
-  background: var(--orange);
-  color: white;
-}
-
-.it { display: none; }
-.en { display: block; }
-body.lang-it .it { display: block; }
-body.lang-it .en { display: none; }
-.inline-it { display: none; }
-.inline-en { display: inline; }
-body.lang-it .inline-it { display: inline; }
-body.lang-it .inline-en { display: none; }
-
-/* TOP BAR */
-.top-bar {
-  background: var(--dark);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 48px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--gray);
-  letter-spacing: 1px;
-}
-
-.top-bar-right {
-  display: flex;
-  gap: 32px;
-}
-
-/* NAV */
-nav {
-  background: var(--black);
-  border-bottom: 1px solid var(--border);
-  padding: 0 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
 .logo {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  padding: 20px 0;
-  text-decoration: none;
+  font-family:var(--cond);
+  font-weight:700;
+  font-size:20px;
+  letter-spacing:5px;
+  color:var(--white);
+}
+.logo span { color:var(--orange); }
+.header-sub {
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--gray);
+  letter-spacing:2px;
 }
 
-.logo-mark {
-  font-family: var(--cond);
-  font-weight: 700;
-  font-size: 22px;
-  letter-spacing: 6px;
-  color: var(--white);
+/* LAYOUT */
+.main {
+  display:grid;
+  grid-template-columns:420px 1fr;
+  min-height:calc(100vh - 57px);
 }
 
-.logo-mark span { color: var(--orange); }
-
-.logo-sub {
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--gray);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  border-left: 1px solid var(--border);
-  padding-left: 16px;
+/* LEFT — INPUT PANEL */
+.input-panel {
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  padding:0;
+  overflow-y:auto;
 }
 
-nav ul {
-  list-style: none;
-  display: flex;
+.section-block {
+  border-bottom:1px solid var(--border);
+  padding:24px 28px;
 }
 
-nav ul li a {
-  display: block;
-  padding: 22px 20px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 1px;
-  text-decoration: none;
-  color: var(--gray);
-  border-right: 1px solid var(--border);
-  transition: all 0.15s;
+.block-title {
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--orange);
+  letter-spacing:3px;
+  text-transform:uppercase;
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.block-title::before {
+  content:'//';
+  color:var(--gray);
 }
 
-nav ul li:first-child a { border-left: 1px solid var(--border); }
-nav ul li a:hover { color: var(--white); background: var(--panel); }
+.field {
+  margin-bottom:18px;
+}
+.field label {
+  display:block;
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--gray2);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.field input, .field select {
+  width:100%;
+  background:var(--panel2);
+  border:1px solid var(--border2);
+  color:var(--white);
+  font-family:var(--mono);
+  font-size:13px;
+  padding:10px 14px;
+  outline:none;
+  transition:border 0.15s;
+  -webkit-appearance:none;
+}
+.field input:focus, .field select:focus {
+  border-color:var(--orange);
+}
+.field select option { background:var(--panel2); }
 
-/* HERO */
-.hero {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: calc(100vh - 90px);
-  border-bottom: 1px solid var(--border);
+.field-row {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
 }
 
-.hero-left {
-  padding: 80px 48px;
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.field-hint {
+  font-size:11px;
+  color:var(--gray);
+  margin-top:4px;
+  font-style:italic;
 }
 
-.hero-tag {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--orange);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 48px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* SAFETY FACTOR DISPLAY */
+.sf-bar {
+  margin-top:6px;
+  height:3px;
+  background:var(--border2);
+  border-radius:2px;
+  overflow:hidden;
+}
+.sf-fill {
+  height:100%;
+  background:var(--orange);
+  transition:width 0.3s;
 }
 
-.hero-tag::before {
-  content: '//';
-  color: var(--gray);
+/* VALVE SECTION */
+.valve-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:4px;
+}
+.valve-btn {
+  padding:10px;
+  background:var(--panel2);
+  border:1px solid var(--border2);
+  color:var(--gray2);
+  font-family:var(--mono);
+  font-size:11px;
+  cursor:pointer;
+  text-align:center;
+  transition:all 0.15s;
+  letter-spacing:1px;
+}
+.valve-btn:hover { border-color:var(--orange); color:var(--white); }
+.valve-btn.active { border-color:var(--orange); background:var(--orange-dim); color:var(--orange); }
+
+/* BTN CONFIGURE */
+.btn-configure {
+  width:100%;
+  padding:16px;
+  background:var(--orange);
+  border:none;
+  color:white;
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:background 0.15s;
+  margin-top:4px;
+}
+.btn-configure:hover { background:#b84d00; }
+.btn-configure:disabled { background:var(--gray); cursor:not-allowed; }
+
+/* RIGHT — OUTPUT PANEL */
+.output-panel {
+  padding:32px;
+  overflow-y:auto;
 }
 
-.hero h1 {
-  font-family: var(--cond);
-  font-weight: 700;
-  font-size: clamp(48px, 6vw, 80px);
-  line-height: 1;
-  letter-spacing: -1px;
-  text-transform: uppercase;
-  margin-bottom: 32px;
+.output-empty {
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  color:var(--gray);
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:2px;
+}
+.output-empty::before {
+  content:'[ AWAITING INPUT ]';
+  color:var(--border2);
+  font-size:16px;
+  letter-spacing:4px;
 }
 
-.hero h1 em {
-  color: var(--orange);
-  font-style: normal;
-  display: block;
+/* RESULT CARD */
+.result-card {
+  display:none;
+}
+.result-card.show { display:block; }
+
+.result-header {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:28px;
+  padding-bottom:20px;
+  border-bottom:1px solid var(--border);
 }
 
-.hero-desc {
-  font-size: 15px;
-  font-weight: 300;
-  line-height: 1.8;
-  color: var(--gray-light);
-  max-width: 480px;
-  margin-bottom: 60px;
+.result-model {
+  font-family:var(--cond);
+  font-size:42px;
+  font-weight:700;
+  letter-spacing:2px;
+  color:var(--white);
+  line-height:1;
 }
 
-.hero-specs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border: 1px solid var(--border);
+.result-code {
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--orange);
+  letter-spacing:2px;
+  margin-top:6px;
 }
 
+.result-badge {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.badge {
+  padding:4px 10px;
+  border:1px solid var(--border2);
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:1px;
+  color:var(--gray2);
+}
+.badge.ok { border-color:var(--green); color:#4ec94e; background:var(--green-dim); }
+.badge.warn { border-color:var(--orange); color:var(--orange); background:var(--orange-dim); }
+
+/* SPECS GRID */
+.specs-grid {
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:1px;
+  background:var(--border);
+  margin-bottom:24px;
+}
 .spec-cell {
-  padding: 20px 24px;
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  background:var(--panel);
+  padding:16px 18px;
 }
-
-.spec-cell:nth-child(even) { border-right: none; }
-.spec-cell:nth-last-child(-n+2) { border-bottom: none; }
-
 .spec-key {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: var(--gray);
-  text-transform: uppercase;
-  margin-bottom: 6px;
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--gray);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:6px;
 }
-
 .spec-val {
-  font-family: var(--cond);
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--orange);
+  font-family:var(--cond);
+  font-size:18px;
+  font-weight:600;
+  color:var(--white);
+}
+.spec-val.highlight { color:var(--orange); }
+
+/* TORQUE ANALYSIS */
+.torque-section {
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:20px;
+  margin-bottom:20px;
+}
+.torque-title {
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--orange);
+  letter-spacing:3px;
+  margin-bottom:16px;
+}
+.torque-row {
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:10px;
+}
+.torque-label {
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--gray2);
+  width:120px;
+  flex-shrink:0;
+}
+.torque-bar-bg {
+  flex:1;
+  height:6px;
+  background:var(--border2);
+}
+.torque-bar-fill {
+  height:100%;
+  background:var(--orange);
+  transition:width 0.4s;
+}
+.torque-bar-fill.safe { background:var(--green); }
+.torque-val {
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--white);
+  width:80px;
+  text-align:right;
 }
 
-/* HERO RIGHT — product diagram */
-.hero-right {
-  background: var(--panel);
-  padding: 80px 48px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
+/* PACKAGE TABLE */
+.package-table {
+  width:100%;
+  border-collapse:collapse;
+  margin-bottom:24px;
 }
-
-.hero-right::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 40px 40px;
-  opacity: 0.4;
+.package-table th {
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--gray);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  padding:10px 14px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+  background:var(--panel);
 }
-
-.product-diagram {
-  position: relative;
-  z-index: 2;
+.package-table td {
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
 }
+.package-table tr:last-child td { border-bottom:none; }
+.package-table tbody tr { background:var(--panel); transition:background 0.1s; }
+.package-table tbody tr:hover { background:var(--panel2); }
+.td-code { font-family:var(--mono); font-size:11px; color:var(--orange); }
+.td-name { font-family:var(--cond); font-size:14px; font-weight:600; text-transform:uppercase; }
+.td-spec { font-size:12px; color:var(--gray2); }
 
-.diagram-title {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--orange);
-  letter-spacing: 3px;
-  margin-bottom: 40px;
+/* VALVE INFO */
+.valve-info {
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:20px;
+  margin-bottom:20px;
 }
-
-.diagram-item {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border);
+.valve-info-title {
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--gray);
+  letter-spacing:3px;
+  margin-bottom:12px;
 }
-
-.diagram-item:first-of-type { border-top: 1px solid var(--border); }
-
-.diagram-num {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--gray);
-  width: 28px;
-  flex-shrink: 0;
+.valve-row {
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
 }
+.valve-row:last-child { border-bottom:none; }
+.valve-row span:first-child { color:var(--gray2); font-family:var(--mono); font-size:11px; }
+.valve-row span:last-child { font-weight:500; }
 
-.diagram-name {
-  font-family: var(--cond);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  flex: 1;
+/* ACTIONS */
+.action-bar {
+  display:flex;
+  gap:12px;
+  margin-top:8px;
 }
-
-.diagram-spec {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--gray);
-  text-align: right;
+.btn-action {
+  flex:1;
+  padding:14px;
+  background:var(--panel);
+  border:1px solid var(--border2);
+  color:var(--gray2);
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.15s;
 }
+.btn-action:hover { border-color:var(--orange); color:var(--white); }
+.btn-action.primary { background:var(--orange); border-color:var(--orange); color:white; }
+.btn-action.primary:hover { background:#b84d00; }
 
-.diagram-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--orange);
-  flex-shrink: 0;
+/* QUOTE SECTION */
+.quote-section {
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:20px;
+  margin-bottom:20px;
+  display:none;
 }
-
-/* SECTION BASE */
-.section {
-  border-bottom: 1px solid var(--border);
+.quote-section.show { display:block; }
+.quote-title {
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--gray);
+  letter-spacing:3px;
+  margin-bottom:16px;
 }
-
-.section-inner {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 80px 48px;
+.quote-field {
+  margin-bottom:12px;
 }
-
-.section-header {
-  display: flex;
-  align-items: baseline;
-  gap: 24px;
-  margin-bottom: 60px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border);
+.quote-field label {
+  display:block;
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--gray2);
+  letter-spacing:1px;
+  margin-bottom:5px;
 }
-
-.section-num {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--orange);
-  letter-spacing: 2px;
+.quote-field input, .quote-field textarea {
+  width:100%;
+  background:var(--panel2);
+  border:1px solid var(--border2);
+  color:var(--white);
+  font-family:var(--mono);
+  font-size:12px;
+  padding:8px 12px;
+  outline:none;
 }
+.quote-field textarea { height:60px; resize:vertical; }
+.quote-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 
-.section-title {
-  font-family: var(--cond);
-  font-weight: 700;
-  font-size: 28px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+/* ALERT */
+.alert {
+  padding:12px 16px;
+  border:1px solid;
+  font-family:var(--mono);
+  font-size:11px;
+  margin-bottom:16px;
+  letter-spacing:1px;
 }
+.alert.warn { border-color:var(--orange); color:var(--orange); background:var(--orange-dim); }
+.alert.error { border-color:#c0392b; color:#e74c3c; background:rgba(192,57,43,0.1); }
 
-/* PRODUCTS TABLE */
-.products-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.products-table thead tr {
-  border-bottom: 1px solid var(--border);
-}
-
-.products-table th {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: var(--gray);
-  text-transform: uppercase;
-  padding: 12px 20px;
-  text-align: left;
-  font-weight: 400;
-}
-
-.products-table tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background 0.15s;
-}
-
-.products-table tbody tr:hover {
-  background: var(--panel);
-}
-
-.products-table td {
-  padding: 20px;
-  vertical-align: middle;
-}
-
-.td-code {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--orange);
-  white-space: nowrap;
-}
-
-.td-name {
-  font-family: var(--cond);
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.td-desc {
-  font-size: 13px;
-  color: var(--gray-light);
-  max-width: 360px;
-}
-
-.td-cert {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--gray);
-  letter-spacing: 1px;
-}
-
-.cert-tag {
-  display: inline-block;
-  padding: 2px 8px;
-  border: 1px solid var(--border);
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 1px;
-  margin-right: 4px;
-  color: var(--gray-light);
-}
-
-.cert-tag.highlight {
-  border-color: var(--orange);
-  color: var(--orange);
-}
-
-/* SOFTWARE SECTION */
-.software-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  border: 1px solid var(--border);
-}
-
-.sw-left {
-  padding: 48px;
-  border-right: 1px solid var(--border);
-}
-
-.sw-right {
-  background: var(--panel);
-  padding: 48px;
-}
-
-.sw-title {
-  font-family: var(--cond);
-  font-weight: 700;
-  font-size: 22px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 16px;
-}
-
-.sw-desc {
-  font-size: 14px;
-  font-weight: 300;
-  color: var(--gray-light);
-  line-height: 1.8;
-  margin-bottom: 40px;
-}
-
-.capability-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.capability-list li {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-  color: var(--gray-light);
-}
-
-.capability-list li::before {
-  content: '→';
-  color: var(--orange);
-  font-family: var(--mono);
-  font-size: 12px;
-  flex-shrink: 0;
-}
-
-/* Terminal mock */
-.terminal {
-  background: #0a0a0a;
-  border: 1px solid var(--border);
-  font-family: var(--mono);
-  font-size: 12px;
-  overflow: hidden;
-}
-
-.terminal-header {
-  background: var(--border);
-  padding: 8px 16px;
-  font-size: 10px;
-  color: var(--gray);
-  letter-spacing: 1px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.terminal-body {
-  padding: 24px;
-  line-height: 2;
-}
-
-.t-comment { color: var(--gray); }
-.t-key { color: #7eb8d4; }
-.t-val { color: #c8d060; }
-.t-orange { color: var(--orange); }
-.t-white { color: var(--white); }
-.t-green { color: #4ec94e; }
-
-/* INTEGRATION SECTION */
-.integration-text {
-  max-width: 700px;
-  font-size: 15px;
-  font-weight: 300;
-  color: var(--gray-light);
-  line-height: 1.9;
-  margin-bottom: 48px;
-}
-
-.integration-text strong {
-  color: var(--white);
-  font-weight: 500;
-}
-
-.integration-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border: 1px solid var(--border);
-}
-
-.int-cell {
-  padding: 40px 32px;
-  border-right: 1px solid var(--border);
-}
-
-.int-cell:last-child { border-right: none; }
-
-.int-num {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--orange);
-  letter-spacing: 2px;
-  margin-bottom: 20px;
-}
-
-.int-title {
-  font-family: var(--cond);
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-}
-
-.int-body {
-  font-size: 13px;
-  color: var(--gray-light);
-  line-height: 1.7;
-}
-
-/* CONTACT */
-.contact-block {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border: 1px solid var(--border);
-}
-
-.contact-left {
-  padding: 60px 48px;
-  border-right: 1px solid var(--border);
-}
-
-.contact-right {
-  padding: 60px 48px;
-  background: var(--panel);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 32px;
-}
-
-.contact-heading {
-  font-family: var(--cond);
-  font-weight: 700;
-  font-size: 32px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 24px;
-}
-
-.contact-body {
-  font-size: 14px;
-  font-weight: 300;
-  color: var(--gray-light);
-  line-height: 1.8;
-  max-width: 400px;
-}
-
-.contact-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.contact-detail-key {
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--orange);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-}
-
-.contact-detail-val {
-  font-family: var(--cond);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--white);
-}
-
-.btn-contact {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 32px;
-  padding: 14px 28px;
-  background: var(--orange);
-  color: white;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.btn-contact:hover { background: #b84d00; }
-
-/* FOOTER */
-footer {
-  background: var(--dark);
-  border-top: 1px solid var(--border);
-  padding: 32px 48px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.footer-left {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.footer-logo {
-  font-family: var(--cond);
-  font-weight: 700;
-  font-size: 16px;
-  letter-spacing: 5px;
-  color: var(--white);
-}
-
-.footer-logo span { color: var(--orange); }
-
-.footer-tagline {
-  font-family: var(--mono);
-  font-size: 9px;
-  color: var(--gray);
-  letter-spacing: 2px;
-  border-left: 1px solid var(--border);
-  padding-left: 24px;
-}
-
-.footer-copy {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--gray);
-  letter-spacing: 1px;
-}
-
-@media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; }
-  .hero-right { display: none; }
-  .software-grid { grid-template-columns: 1fr; }
-  .sw-left { border-right: none; border-bottom: 1px solid var(--border); }
-  .integration-grid { grid-template-columns: 1fr; }
-  .int-cell { border-right: none; border-bottom: 1px solid var(--border); }
-  .contact-block { grid-template-columns: 1fr; }
-  .contact-left { border-right: none; border-bottom: 1px solid var(--border); }
-  nav ul { display: none; }
-  .top-bar { padding: 10px 20px; font-size: 9px; }
-  .section-inner { padding: 60px 20px; }
+@media (max-width:900px) {
+  .main { grid-template-columns:1fr; }
+  .specs-grid { grid-template-columns:1fr 1fr; }
 }
 </style>
 </head>
 <body>
 
-<div class="lang-toggle">
-  <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
-  <button class="lang-btn" id="btn-it" onclick="setLang('it')">IT</button>
-</div>
-
-<!-- TOP BAR -->
-<div class="top-bar">
-  <span class="inline-en">ROBOSTI INDUSTRIAL SYSTEMS — Valve Automation Division</span>
-  <span class="inline-it">ROBOSTI INDUSTRIAL SYSTEMS — Divisione Automazione Valvole</span>
-  <div class="top-bar-right">
-    <span class="en">Standards: ISO 5211 · EN 15714 · ATEX 2014/34/EU</span>
-    <span class="it">Standard: ISO 5211 · EN 15714 · ATEX 2014/34/EU</span>
-    <span>robosti.com</span>
+<div class="header">
+  <div>
+    <div class="logo">ROB<span>O</span>STI</div>
+    <div class="header-sub">PNEUMATIC ACTUATOR CONFIGURATOR v1.0 — RACK & PINION SERIES</div>
+  </div>
+  <div class="header-sub" style="text-align:right">
+    STANDARDS: ISO 5211 · EN 15714-2 · ATEX 2014/34/EU<br>
+    robosti.com
   </div>
 </div>
 
-<!-- NAV -->
-<nav>
-  <a href="#" class="logo">
-    <span class="logo-mark">ROB<span>O</span>STI</span>
-    <span class="logo-sub">
-      <span class="inline-en">Industrial Valve Automation</span>
-      <span class="inline-it">Automazione Industriale Valvole</span>
-    </span>
-  </a>
-  <ul>
-    <li><a href="#products"><span class="inline-en">Products</span><span class="inline-it">Prodotti</span></a></li>
-    <li><a href="#software"><span class="inline-en">Integration</span><span class="inline-it">Integrazione</span></a></li>
-    <li><a href="#capabilities"><span class="inline-en">Capabilities</span><span class="inline-it">Capabilities</span></a></li>
-    <li><a href="#contact"><span class="inline-en">Contact</span><span class="inline-it">Contatti</span></a></li>
-  </ul>
-</nav>
+<div class="main">
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-left">
-    <div>
-      <div class="hero-tag">
-        <span class="en">Pneumatic Actuator Systems</span>
-        <span class="it">Sistemi Attuatori Pneumatici</span>
-      </div>
-      <h1>
-        <span class="en">COMPLETE<br>VALVE<br><em>AUTOMATION</em><br>SYSTEMS</span>
-        <span class="it">SISTEMI<br>COMPLETI<br><em>AUTOMAZIONE</em><br>VALVOLE</span>
-      </h1>
-      <p class="hero-desc en">
-        From actuator selection to final documentation. ROBOSTI supplies the complete pneumatic package for quarter-turn valves — engineered, certified, and ready to integrate into your commercial process.
-      </p>
-      <p class="hero-desc it">
-        Dalla selezione dell'attuatore alla documentazione finale. ROBOSTI fornisce il pacchetto pneumatico completo per valvole a quarto di giro — progettato, certificato e pronto all'integrazione nel tuo processo commerciale.
-      </p>
-    </div>
-    <div class="hero-specs">
-      <div class="spec-cell">
-        <div class="spec-key en">Actuator type</div>
-        <div class="spec-key it">Tipo attuatore</div>
-        <div class="spec-val">R&P</div>
-      </div>
-      <div class="spec-cell">
-        <div class="spec-key en">Torque range</div>
-        <div class="spec-key it">Range coppia</div>
-        <div class="spec-val">30–32000 Nm</div>
-      </div>
-      <div class="spec-cell">
-        <div class="spec-key en">Certifications</div>
-        <div class="spec-key it">Certificazioni</div>
-        <div class="spec-val">CE · ATEX</div>
-      </div>
-      <div class="spec-cell">
-        <div class="spec-key en">Configuration</div>
-        <div class="spec-key it">Configurazione</div>
-        <div class="spec-val">&lt; 90 sec</div>
-      </div>
-    </div>
-  </div>
+  <!-- LEFT: INPUT -->
+  <div class="input-panel">
 
-  <div class="hero-right">
-    <div class="product-diagram">
-      <div class="diagram-title">// AUTOMATION PACKAGE COMPONENTS</div>
+    <!-- VALVE DATA -->
+    <div class="section-block">
+      <div class="block-title">Valve data</div>
 
-      <div class="diagram-item">
-        <span class="diagram-num">01</span>
-        <span class="diagram-dot"></span>
-        <span class="diagram-name en">Rack & Pinion Actuator</span>
-        <span class="diagram-name it">Attuatore Rack & Pinion</span>
-        <span class="diagram-spec">FA / DA · ISO 5211</span>
+      <div class="field">
+        <label>Valve type</label>
+        <div class="valve-grid">
+          <div class="valve-btn active" onclick="setValveType(this,'ball')">⚫ Ball valve</div>
+          <div class="valve-btn" onclick="setValveType(this,'butterfly')">🦋 Butterfly</div>
+          <div class="valve-btn" onclick="setValveType(this,'plug')">🔌 Plug valve</div>
+          <div class="valve-btn" onclick="setValveType(this,'other')">⚙ Other</div>
+        </div>
       </div>
-      <div class="diagram-item">
-        <span class="diagram-num">02</span>
-        <span class="diagram-dot" style="background:var(--gray-light)"></span>
-        <span class="diagram-name en">Limit Switch Box</span>
-        <span class="diagram-name it">Finecorsa</span>
-        <span class="diagram-spec">IP67 · NAMUR</span>
-      </div>
-      <div class="diagram-item">
-        <span class="diagram-num">03</span>
-        <span class="diagram-dot" style="background:var(--gray-light)"></span>
-        <span class="diagram-name en">Filter Regulator</span>
-        <span class="diagram-name it">Filtro Riduttore</span>
-        <span class="diagram-spec">1/4" · 3/8" · 1/2"</span>
-      </div>
-      <div class="diagram-item">
-        <span class="diagram-num">04</span>
-        <span class="diagram-dot" style="background:var(--gray-light)"></span>
-        <span class="diagram-name en">Solenoid Valve</span>
-        <span class="diagram-name it">Elettrovalvola</span>
-        <span class="diagram-spec">NAMUR · 24V / 110V / 230V</span>
-      </div>
-      <div class="diagram-item">
-        <span class="diagram-num">05</span>
-        <span class="diagram-dot" style="background:var(--gray-light)"></span>
-        <span class="diagram-name en">Positioner</span>
-        <span class="diagram-name it">Posizionatore</span>
-        <span class="diagram-spec">4–20 mA · HART</span>
-      </div>
-      <div class="diagram-item">
-        <span class="diagram-num">06</span>
-        <span class="diagram-dot" style="background:var(--gray-light)"></span>
-        <span class="diagram-name en">Pneumatic Tubing</span>
-        <span class="diagram-name it">Tubing Pneumatico</span>
-        <span class="diagram-spec">PU · Nylon · SS</span>
-      </div>
-      <div class="diagram-item">
-        <span class="diagram-num">07</span>
-        <span class="diagram-dot" style="background:var(--gray-light)"></span>
-        <span class="diagram-name en">Special Coatings</span>
-        <span class="diagram-name it">Verniciature Speciali</span>
-        <span class="diagram-spec">RAL · Epoxy · Marine · HT</span>
-      </div>
-      <div class="diagram-item">
-        <span class="diagram-num">08</span>
-        <span class="diagram-dot" style="background:var(--orange); box-shadow: 0 0 8px var(--orange)"></span>
-        <span class="diagram-name" style="color:var(--orange)">Configuration Software</span>
-        <span class="diagram-spec">Integrated · API ready</span>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- PRODUCTS -->
-<div class="section" id="products">
-  <div class="section-inner">
-    <div class="section-header">
-      <span class="section-num">// 01</span>
-      <span class="section-title en">Product Specifications</span>
-      <span class="section-title it">Specifiche Prodotto</span>
-    </div>
-    <table class="products-table">
-      <thead>
-        <tr>
-          <th>REF</th>
-          <th class="en">Component</th>
-          <th class="it">Componente</th>
-          <th class="en">Technical specifications</th>
-          <th class="it">Specifiche tecniche</th>
-          <th class="en">Certifications</th>
-          <th class="it">Certificazioni</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="td-code">RB-ACT</td>
-          <td class="td-name en">Rack & Pinion Actuator</td>
-          <td class="td-name it">Attuatore Rack & Pinion</td>
-          <td class="td-desc en">30–32,000 Nm · Spring return (FA) / Double acting (DA) · Aluminium body · Stainless steel springs · ISO 5211 · Operating temp. −20°C / +80°C</td>
-          <td class="td-desc it">30–32.000 Nm · Semplice effetto (FA) / Doppio effetto (DA) · Corpo alluminio · Molle acciaio inox · ISO 5211 · Temp. operativa −20°C / +80°C</td>
-          <td><span class="cert-tag highlight">CE</span><span class="cert-tag highlight">ATEX</span><span class="cert-tag">ISO 5211</span></td>
-        </tr>
-        <tr>
-          <td class="td-code">RB-LSB</td>
-          <td class="td-name en">Limit Switch Box</td>
-          <td class="td-name it">Finecorsa</td>
-          <td class="td-desc en">Mechanical & electronic · IP67 · NAMUR interface · 2× SPDT micro-switches · Visual indicator · Aluminium housing</td>
-          <td class="td-desc it">Meccanico & elettronico · IP67 · Interfaccia NAMUR · 2× microswitch SPDT · Indicatore visivo · Corpo alluminio</td>
-          <td><span class="cert-tag highlight">CE</span><span class="cert-tag highlight">ATEX</span><span class="cert-tag">NAMUR</span></td>
-        </tr>
-        <tr>
-          <td class="td-code">RB-FRG</td>
-          <td class="td-name en">Filter Regulator</td>
-          <td class="td-name it">Filtro Riduttore</td>
-          <td class="td-desc en">1/4"–1/2" BSP · 0.5–10 bar output · 40μm filter element · Manual / auto drain · Gauge included</td>
-          <td class="td-desc it">1/4"–1/2" BSP · Uscita 0,5–10 bar · Filtro 40μm · Scarico manuale / automatico · Manometro incluso</td>
-          <td><span class="cert-tag">CE</span><span class="cert-tag">ISO 8573</span></td>
-        </tr>
-        <tr>
-          <td class="td-code">RB-SOL</td>
-          <td class="td-name en">Solenoid Valve</td>
-          <td class="td-name it">Elettrovalvola</td>
-          <td class="td-desc en">3/2 & 5/2 · NAMUR direct mount · 24VDC / 110VAC / 230VAC · IP65 std · EX version available · Coil protection class F</td>
-          <td class="td-desc it">3/2 & 5/2 · Montaggio diretto NAMUR · 24VDC / 110VAC / 230VAC · IP65 std · Versione EX disponibile · Classe protezione bobina F</td>
-          <td><span class="cert-tag highlight">CE</span><span class="cert-tag highlight">ATEX</span><span class="cert-tag">NAMUR</span></td>
-        </tr>
-        <tr>
-          <td class="td-code">RB-POS</td>
-          <td class="td-name en">Electro-pneumatic Positioner</td>
-          <td class="td-name it">Posizionatore Elettropneumatico</td>
-          <td class="td-desc en">4–20 mA input · HART protocol · Split range configurable · LCD display · Auto-calibration · IP66</td>
-          <td class="td-desc it">Ingresso 4–20 mA · Protocollo HART · Split range configurabile · Display LCD · Autocalibrazione · IP66</td>
-          <td><span class="cert-tag highlight">CE</span><span class="cert-tag highlight">ATEX</span><span class="cert-tag">HART</span></td>
-        </tr>
-        <tr>
-          <td class="td-code">RB-TUB</td>
-          <td class="td-name en">Pneumatic Tubing & Fittings</td>
-          <td class="td-name it">Tubing & Raccorderia</td>
-          <td class="td-desc en">PU / Nylon / SS316 · 4–12mm OD · Push-in fittings · Custom assembly kits · Pre-routed options</td>
-          <td class="td-desc it">PU / Nylon / SS316 · DN 4–12mm · Raccordi push-in · Kit assemblati su misura · Opzioni pre-instradamento</td>
-          <td><span class="cert-tag">CE</span></td>
-        </tr>
-        <tr>
-          <td class="td-code">RB-FIN</td>
-          <td class="td-name en">Protective Coatings</td>
-          <td class="td-name it">Verniciature Protettive</td>
-          <td class="td-desc en">RAL standard · Epoxy (C3/C4) · Marine grade (C5-M) · High temperature (up to 250°C) · Customer-specified RAL on request</td>
-          <td class="td-desc it">RAL standard · Epossidica (C3/C4) · Grado marino (C5-M) · Alta temperatura (fino a 250°C) · RAL cliente su richiesta</td>
-          <td><span class="cert-tag">ISO 12944</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- SOFTWARE INTEGRATION -->
-<div class="section" id="software">
-  <div class="section-inner">
-    <div class="section-header">
-      <span class="section-num">// 02</span>
-      <span class="section-title en">Configuration & Integration</span>
-      <span class="section-title it">Configurazione & Integrazione</span>
-    </div>
-    <div class="software-grid">
-      <div class="sw-left">
-        <div class="sw-title en">Integrated configurator</div>
-        <div class="sw-title it">Configuratore integrato</div>
-        <p class="sw-desc en">
-          The ROBOSTI configuration system integrates directly into your commercial workflow. Input valve parameters, output: complete package code, technical datasheet, dimensional drawing and net price — in under 90 seconds.
-        </p>
-        <p class="sw-desc it">
-          Il sistema di configurazione ROBOSTI si integra direttamente nel tuo processo commerciale. Input: parametri valvola. Output: codice pacchetto completo, scheda tecnica, disegno dimensionale e prezzo netto — in meno di 90 secondi.
-        </p>
-        <ul class="capability-list">
-          <li class="en">Actuator sizing from valve torque requirements</li>
-          <li class="it">Dimensionamento attuatore da coppia valvola richiesta</li>
-          <li class="en">Automatic accessory selection by application</li>
-          <li class="it">Selezione accessori automatica per applicazione</li>
-          <li class="en">Auto-generated technical datasheet (PDF)</li>
-          <li class="it">Scheda tecnica generata automaticamente (PDF)</li>
-          <li class="en">Dimensional drawing export (DXF / PDF)</li>
-          <li class="it">Esportazione disegno dimensionale (DXF / PDF)</li>
-          <li class="en">Commercial offer with net pricing</li>
-          <li class="it">Offerta commerciale con prezzi netti</li>
-          <li class="en">API available for ERP / CRM integration</li>
-          <li class="it">API disponibile per integrazione ERP / CRM</li>
-        </ul>
+      <div class="field-row">
+        <div class="field">
+          <label>Nominal size (DN)</label>
+          <select id="valve-dn">
+            <option value="15">DN 15</option>
+            <option value="20">DN 20</option>
+            <option value="25">DN 25</option>
+            <option value="32">DN 32</option>
+            <option value="40">DN 40</option>
+            <option value="50">DN 50</option>
+            <option value="65">DN 65</option>
+            <option value="80">DN 80</option>
+            <option value="100" selected>DN 100</option>
+            <option value="125">DN 125</option>
+            <option value="150">DN 150</option>
+            <option value="200">DN 200</option>
+            <option value="250">DN 250</option>
+            <option value="300">DN 300</option>
+            <option value="350">DN 350</option>
+            <option value="400">DN 400</option>
+            <option value="450">DN 450</option>
+            <option value="500">DN 500</option>
+            <option value="600">DN 600</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Pressure class</label>
+          <select id="valve-pressure">
+            <option value="PN16">PN 16</option>
+            <option value="PN25">PN 25</option>
+            <option value="PN40" selected>PN 40</option>
+            <option value="PN63">PN 63</option>
+            <option value="PN100">PN 100</option>
+            <option value="CL150">Class 150</option>
+            <option value="CL300">Class 300</option>
+            <option value="CL600">Class 600</option>
+          </select>
+        </div>
       </div>
-      <div class="sw-right">
-        <div class="terminal">
-          <div class="terminal-header">
-            <span>ROBOSTI CONFIG ENGINE v2.1</span>
-            <span class="en">LIVE OUTPUT</span>
-            <span class="it">OUTPUT LIVE</span>
+
+      <!-- TORQUE MODE SELECTOR -->
+      <div class="field">
+        <label>Torque input mode</label>
+        <div class="valve-grid" style="grid-template-columns:1fr 1fr 1fr">
+          <div class="valve-btn active" id="mode-btn-1" onclick="setTorqueMode(1)">① Known + SF</div>
+          <div class="valve-btn" id="mode-btn-2" onclick="setTorqueMode(2)">② Known value</div>
+          <div class="valve-btn" id="mode-btn-3" onclick="setTorqueMode(3)">③ From process</div>
+        </div>
+      </div>
+
+      <!-- MODE 1: known torque, apply SF -->
+      <div id="torque-mode-1">
+        <div class="field">
+          <label>Valve torque — from manufacturer datasheet (Nm)</label>
+          <input type="number" id="torque-m1" value="285" min="5" max="15000" step="1">
+          <div class="field-hint">BTO preferred. If only one value available, use it — SF applied below.</div>
+        </div>
+        <div class="field">
+          <label>Safety factor to apply</label>
+          <select id="sf-preset">
+            <option value="1.10">×1.10 — Water / utility, soft seat, frequent service</option>
+            <option value="1.25" selected>×1.25 — Standard industrial, clean fluid</option>
+            <option value="1.30">×1.30 — Viscous fluid / occasional service</option>
+            <option value="1.50">×1.50 — Oil & Gas / metal seat / ESD</option>
+            <option value="1.70">×1.70 — Slurry / high stickiness risk</option>
+            <option value="custom">Custom value →</option>
+          </select>
+        </div>
+        <div class="field" id="sf-custom-field" style="display:none">
+          <label>Custom safety factor</label>
+          <input type="number" id="sf-custom" value="1.25" min="1.0" max="3.0" step="0.05">
+        </div>
+      </div>
+
+      <!-- MODE 2: already includes SF -->
+      <div id="torque-mode-2" style="display:none">
+        <div class="field">
+          <label>Design torque — SF already included (Nm)</label>
+          <input type="number" id="torque-m2" value="355" min="5" max="15000" step="1">
+          <div class="field-hint">Use this when the valve manufacturer already states a design torque with SF included. Applied directly to actuator selection.</div>
+        </div>
+        <div class="alert warn" style="margin-top:0;margin-bottom:0;font-size:10px">
+          ⚠ Confirm with manufacturer that SF is already factored in
+        </div>
+      </div>
+
+      <!-- MODE 3: calculate from process -->
+      <div id="torque-mode-3" style="display:none">
+        <div class="alert warn" style="margin-top:0;margin-bottom:4px;font-size:10px">
+          ⚙ Estimation mode — results are indicative. Validate with valve manufacturer for critical applications.
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>ΔP operating (bar)</label>
+            <input type="number" id="dp-op" value="10" min="0" max="400" step="0.5">
           </div>
-          <div class="terminal-body">
-            <div class="t-comment">// <span class="inline-en">INPUT PARAMETERS</span><span class="inline-it">PARAMETRI INPUT</span></div>
-            <div><span class="t-key">valve_dn</span>       = <span class="t-val">100</span></div>
-            <div><span class="t-key">torque_nm</span>      = <span class="t-val">285</span></div>
-            <div><span class="t-key">action</span>         = <span class="t-val">"FA"</span> <span class="t-comment">// spring return</span></div>
-            <div><span class="t-key">medium</span>         = <span class="t-val">"gas_neutral"</span></div>
-            <div><span class="t-key">temp_max</span>       = <span class="t-val">60</span> <span class="t-comment">// °C</span></div>
-            <div><span class="t-key">solenoid_v</span>     = <span class="t-val">24</span> <span class="t-comment">// VDC</span></div>
-            <div><span class="t-key">zone_ex</span>        = <span class="t-val">false</span></div>
-            <br>
-            <div class="t-comment">// <span class="inline-en">PACKAGE OUTPUT</span><span class="inline-it">PACCHETTO OUTPUT</span></div>
-            <div><span class="t-key">code</span>           = <span class="t-orange">"RB-SR-320-N-24V-G"</span></div>
-            <div><span class="t-key">actuator</span>       = <span class="t-val">"RB-ACT-320-FA-AL"</span></div>
-            <div><span class="t-key">solenoid</span>       = <span class="t-val">"RB-SOL-52-N-24VDC"</span></div>
-            <div><span class="t-key">filter_reg</span>     = <span class="t-val">"RB-FRG-38-MG"</span></div>
-            <div><span class="t-key">limit_sw</span>       = <span class="t-val">"RB-LSB-EL-IP67"</span></div>
-            <div><span class="t-key">coating</span>        = <span class="t-val">"STD-RAL5010"</span></div>
-            <br>
-            <div><span class="t-key">status</span>         = <span class="t-green">"CONFIGURED"</span></div>
-            <div><span class="t-key">pdf_ready</span>      = <span class="t-green">true</span></div>
-            <div><span class="t-key">drawing_ready</span>  = <span class="t-green">true</span></div>
+          <div class="field">
+            <label>ΔP design (bar)</label>
+            <input type="number" id="dp-design" value="16" min="0" max="400" step="0.5">
           </div>
         </div>
+        <div class="field">
+          <label>Seat type</label>
+          <select id="seat-type">
+            <option value="soft">Soft seat — PTFE / PEEK</option>
+            <option value="metal">Metal seat — standard</option>
+            <option value="metal-stellite">Metal seat — stellited / hard faced</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Fluid category</label>
+          <select id="fluid-cat">
+            <option value="gas-clean">Clean gas / air / nitrogen</option>
+            <option value="liquid-clean" selected>Clean liquid / water</option>
+            <option value="liquid-viscous">Viscous liquid (>50 cP)</option>
+            <option value="slurry">Slurry / abrasive</option>
+            <option value="steam">Steam</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Service frequency / stickiness risk</label>
+          <select id="stickiness">
+            <option value="frequent">Frequent — daily operation</option>
+            <option value="normal" selected>Normal — weekly</option>
+            <option value="infrequent">Infrequent — monthly or less</option>
+            <option value="sticky">High risk — polymerizing / crystallizing fluid</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Application criticality</label>
+          <select id="criticality">
+            <option value="utility">Utility / non-critical</option>
+            <option value="industrial" selected>Standard industrial</option>
+            <option value="oilgas">Oil & Gas — process</option>
+            <option value="esd">ESD / SIL rated</option>
+          </select>
+        </div>
+        <div id="pst-recommendation" style="display:none" class="alert warn" style="font-size:10px">
+          ⚠ PST RECOMMENDED — Partial Stroke Test device recommended for this application
+        </div>
       </div>
+
+      <div class="field">
+        <label>ISO 5211 flange on valve</label>
+        <select id="valve-flange">
+          <option value="any">Not specified / any</option>
+          <option value="F03">F03</option>
+          <option value="F04">F04</option>
+          <option value="F05">F05</option>
+          <option value="F07">F07</option>
+          <option value="F10">F10</option>
+          <option value="F12">F12</option>
+          <option value="F14">F14</option>
+          <option value="F16">F16</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ACTUATOR REQUIREMENTS -->
+    <div class="section-block">
+      <div class="block-title">Actuator requirements</div>
+
+      <div class="field">
+        <label>Action type</label>
+        <select id="action">
+          <option value="FA">Spring return — Fail Close (FA)</option>
+          <option value="FO">Spring return — Fail Open (FO)</option>
+          <option value="DA">Double acting (DA)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Supply pressure (bar)</label>
+        <input type="number" id="pressure" value="6" min="2.5" max="8" step="0.5">
+      </div>
+
+      <div class="field">
+        <label>Operating temperature range</label>
+        <select id="temp">
+          <option value="ST">Standard — ST: −40°C to +80°C</option>
+          <option value="HT">High temperature — HT: −15°C to +150°C</option>
+          <option value="LLT2">Low temperature — LLT2: −60°C to +80°C</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Environment / painting</label>
+        <select id="coating">
+          <option value="STD">Standard — RAL 5010 (blue)</option>
+          <option value="C3">Corrosion C3 — Epoxy primer + topcoat</option>
+          <option value="C4">Corrosion C4 — Heavy epoxy</option>
+          <option value="C5M">Marine C5-M — Full marine grade</option>
+          <option value="HT">High temperature — up to 250°C</option>
+          <option value="CUST">Custom RAL on request</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>ATEX zone</label>
+        <select id="atex">
+          <option value="none">Not required</option>
+          <option value="II2G">Zone 1 — II 2G (Ex d)</option>
+          <option value="II3G">Zone 2 — II 3G</option>
+          <option value="II2D">Zone 21 — II 2D (dust)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ACCESSORIES -->
+    <div class="section-block">
+      <div class="block-title">Accessories</div>
+
+      <div class="field">
+        <label>Solenoid valve</label>
+        <select id="solenoid">
+          <option value="none">Not required</option>
+          <option value="24VDC">24 VDC — NAMUR direct mount</option>
+          <option value="110VAC">110 VAC — NAMUR direct mount</option>
+          <option value="230VAC">230 VAC — NAMUR direct mount</option>
+          <option value="24VDC-EX">24 VDC — ATEX (Ex d)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Limit switch box</label>
+        <select id="lsb">
+          <option value="none">Not required</option>
+          <option value="mech">Mechanical — IP67, 2× SPDT</option>
+          <option value="elec">Electronic — IP67, 4–20 mA</option>
+          <option value="mech-ex">Mechanical ATEX — IP67, Ex d</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Filter regulator</label>
+        <select id="filter">
+          <option value="none">Not required</option>
+          <option value="std">Standard — 1/4" BSP, manual drain</option>
+          <option value="auto">Auto drain — 3/8" BSP</option>
+          <option value="lub">With lubricator — 3/8" BSP</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Positioner</label>
+        <select id="positioner">
+          <option value="none">Not required (on/off)</option>
+          <option value="ep">Electro-pneumatic — 4–20 mA</option>
+          <option value="ep-hart">Electro-pneumatic — 4–20 mA + HART</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- CUSTOMER / QUOTE -->
+    <div class="section-block">
+      <div class="block-title">Quote data (optional)</div>
+      <div class="field">
+        <label>Customer / Company</label>
+        <input type="text" id="customer" placeholder="e.g. Alfa Valvole S.r.l.">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Reference / Tag</label>
+          <input type="text" id="tag" placeholder="e.g. V-1042-A">
+        </div>
+        <div class="field">
+          <label>Quantity</label>
+          <input type="number" id="qty" value="1" min="1">
+        </div>
+      </div>
+      <div class="field">
+        <label>Notes</label>
+        <input type="text" id="notes" placeholder="Application notes, special requirements...">
+      </div>
+    </div>
+
+    <div class="section-block">
+      <button class="btn-configure" onclick="configure()">
+        ▶ CONFIGURE & SELECT
+      </button>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: OUTPUT -->
+  <div class="output-panel">
+    <div class="output-empty" id="empty-state">
+      Fill in the valve parameters and press CONFIGURE
+    </div>
+
+    <div class="result-card" id="result-card">
+
+      <div id="alert-box"></div>
+
+      <div class="result-header">
+        <div>
+          <div class="result-model" id="r-model">—</div>
+          <div class="result-code" id="r-code">—</div>
+          <div style="margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--gray)">
+            Generated: <span id="r-date">—</span>
+          </div>
+        </div>
+        <div class="result-badge" id="r-badges"></div>
+      </div>
+
+      <!-- SPECS -->
+      <div class="specs-grid" id="r-specs"></div>
+
+      <!-- TORQUE ANALYSIS -->
+      <div class="torque-section">
+        <div class="torque-title">// TORQUE ANALYSIS</div>
+        <div id="torque-chart"></div>
+      </div>
+
+      <!-- VALVE INFO -->
+      <div class="valve-info">
+        <div class="valve-info-title">// VALVE — ACTUATOR INTERFACE</div>
+        <div id="valve-info-rows"></div>
+      </div>
+
+      <!-- PACKAGE -->
+      <table class="package-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Spec</th>
+          </tr>
+        </thead>
+        <tbody id="r-package"></tbody>
+      </table>
+
+      <!-- ACTIONS -->
+      <div class="action-bar">
+        <button class="btn-action primary" onclick="generatePDF()">⬇ PDF Datasheet</button>
+        <button class="btn-action" onclick="toggleQuote()">📄 Generate Offer</button>
+        <button class="btn-action" onclick="window.print()">🖨 Print</button>
+      </div>
+
+      <!-- QUOTE -->
+      <div class="quote-section" id="quote-section">
+        <div class="quote-title">// COMMERCIAL OFFER</div>
+        <div id="quote-content"></div>
+        <button class="btn-action primary" onclick="generateQuotePDF()" style="width:100%;margin-top:12px">
+          ⬇ Download Offer PDF
+        </button>
+      </div>
+
     </div>
   </div>
 </div>
-
-<!-- INTEGRATION FOR MANUFACTURERS -->
-<div class="section" id="capabilities">
-  <div class="section-inner">
-    <div class="section-header">
-      <span class="section-num">// 03</span>
-      <span class="section-title en">For Valve Manufacturers</span>
-      <span class="section-title it">Per i Costruttori di Valvole</span>
-    </div>
-    <p class="integration-text en">
-      ROBOSTI operates as a <strong>fully integrated automation supplier</strong> for valve manufacturers. We do not distribute through intermediaries. Your engineering and commercial teams access our configuration system directly — the complete actuator package becomes part of your standard offer, with no additional overhead on your side.
-    </p>
-    <p class="integration-text it">
-      ROBOSTI opera come <strong>fornitore di automazione completamente integrato</strong> per i costruttori di valvole. Non distribuiamo attraverso intermediari. I vostri uffici tecnici e commerciali accedono direttamente al nostro sistema di configurazione — il pacchetto attuatore completo entra nella vostra offerta standard, senza overhead aggiuntivo da parte vostra.
-    </p>
-    <div class="integration-grid">
-      <div class="int-cell">
-        <div class="int-num">// SUPPLY</div>
-        <div class="int-title en">Direct supply chain</div>
-        <div class="int-title it">Filiera diretta</div>
-        <div class="int-body en">Single-source supply for the complete automation package. One order, one delivery, one invoice. No coordination across multiple suppliers.</div>
-        <div class="int-body it">Fornitura single-source per il pacchetto completo. Un ordine, una consegna, una fattura. Nessun coordinamento tra fornitori multipli.</div>
-      </div>
-      <div class="int-cell">
-        <div class="int-num">// TECHNICAL</div>
-        <div class="int-title en">Engineering support</div>
-        <div class="int-title it">Supporto tecnico</div>
-        <div class="int-body en">Actuator sizing, compatibility review, application-specific configuration. Technical documentation in your format and language.</div>
-        <div class="int-body it">Dimensionamento attuatore, verifica compatibilità, configurazione per applicazione specifica. Documentazione tecnica nel vostro formato e lingua.</div>
-      </div>
-      <div class="int-cell">
-        <div class="int-num">// COMMERCIAL</div>
-        <div class="int-title en">Sales integration</div>
-        <div class="int-title it">Integrazione commerciale</div>
-        <div class="int-body en">Configuration tool deployed inside your commercial process. Your team quotes actuator packages independently — without calling us for every order.</div>
-        <div class="int-body it">Tool di configurazione integrato nel vostro processo commerciale. Il vostro ufficio quota pacchetti attuatore in autonomia — senza chiamarci ad ogni ordine.</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- CONTACT -->
-<div class="section" id="contact">
-  <div class="section-inner">
-    <div class="section-header">
-      <span class="section-num">// 04</span>
-      <span class="section-title en">Contact</span>
-      <span class="section-title it">Contatti</span>
-    </div>
-    <div class="contact-block">
-      <div class="contact-left">
-        <div class="contact-heading en">Technical<br>& commercial<br>enquiries</div>
-        <div class="contact-heading it">Richieste<br>tecniche<br>e commerciali</div>
-        <p class="contact-body en">
-          For integration proposals, technical specifications, and pricing — contact us directly. We respond to all enquiries within one business day.
-        </p>
-        <p class="contact-body it">
-          Per proposte di integrazione, specifiche tecniche e prezzi — contattateci direttamente. Rispondiamo a tutte le richieste entro un giorno lavorativo.
-        </p>
-        <a href="mailto:roberto.alberio@nortekhendriks.com" class="btn-contact">
-          <span class="en">→ Send enquiry</span>
-          <span class="it">→ Invia richiesta</span>
-        </a>
-      </div>
-      <div class="contact-right">
-        <div class="contact-detail">
-          <span class="contact-detail-key">Contact</span>
-          <span class="contact-detail-val">Roberto Alberio</span>
-        </div>
-        <div class="contact-detail">
-          <span class="contact-detail-key">Email</span>
-          <span class="contact-detail-val">roberto.alberio@nortekhendriks.com</span>
-        </div>
-        <div class="contact-detail">
-          <span class="contact-detail-key">Mobile</span>
-          <span class="contact-detail-val">+39 351 60 70 681</span>
-        </div>
-        <div class="contact-detail">
-          <span class="contact-detail-key en">Operating area</span>
-          <span class="contact-detail-key it">Area operativa</span>
-          <span class="contact-detail-val en">Northern Italy · Europe</span>
-          <span class="contact-detail-val it">Nord Italia · Europa</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-left">
-    <span class="footer-logo">ROB<span>O</span>STI</span>
-    <span class="footer-tagline en">Industrial Valve Automation Systems</span>
-    <span class="footer-tagline it">Sistemi di Automazione Industriale per Valvole</span>
-  </div>
-  <span class="footer-copy">© 2026 ROBOSTI · CE · ATEX · ISO 5211</span>
-</footer>
 
 <script>
-function setLang(lang) {
-  document.body.classList.toggle('lang-it', lang === 'it');
-  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-  document.getElementById('btn-it').classList.toggle('active', lang === 'it');
+// ============================================================
+// DATA
+// ============================================================
+const MODELS = [
+  { id:"AT045U", piston:45,  da6_0:14.4,  da6_90:13.2,  sa6_0:null, sa6_90:null, flange:"F04",       weight:0.75 },
+  { id:"AT051U", piston:50,  da6_0:19.9,  da6_90:18.3,  sa6_0:13.3, sa6_90:11.3, flange:"F04",       weight:1.10 },
+  { id:"AT101U", piston:63,  da6_0:35.2,  da6_90:32.0,  sa6_0:22.3, sa6_90:20.9, flange:"F05+F07",   weight:1.61 },
+  { id:"AT201U", piston:75,  da6_0:69.8,  da6_90:64.0,  sa6_0:44.1, sa6_90:32.8, flange:"F05+F07",   weight:2.68 },
+  { id:"AT251U", piston:88,  da6_0:110,   da6_90:101,   sa6_0:67.7, sa6_90:49.0, flange:"F05+F07",   weight:3.62 },
+  { id:"AT301U", piston:100, da6_0:160,   da6_90:146,   sa6_0:101,  sa6_90:75.3, flange:"F07+F10",   weight:5.15 },
+  { id:"AT351U", piston:115, da6_0:258,   da6_90:236,   sa6_0:163,  sa6_90:118,  flange:"F07+F10",   weight:8.07 },
+  { id:"AT401U", piston:125, da6_0:332,   da6_90:305,   sa6_0:210,  sa6_90:156,  flange:"F07+F10",   weight:9.97 },
+  { id:"AT451U", piston:145, da6_0:522,   da6_90:478,   sa6_0:330,  sa6_90:246,  flange:"F10+F12",   weight:14.2 },
+  { id:"AT501U", piston:160, da6_0:681,   da6_90:624,   sa6_0:422,  sa6_90:325,  flange:"F10+F12",   weight:17.8 },
+  { id:"AT551U", piston:180, da6_0:919,   da6_90:842,   sa6_0:558,  sa6_90:416,  flange:"F14",       weight:24.3 },
+  { id:"AT601U", piston:200, da6_0:1276,  da6_90:1170,  sa6_0:787,  sa6_90:603,  flange:"F14",       weight:34.3 },
+  { id:"AT651U", piston:240, da6_0:2144,  da6_90:1966,  sa6_0:1317, sa6_90:1028, flange:"F16",       weight:54.6 },
+  { id:"AT701U", piston:265, da6_0:3112,  da6_90:2853,  sa6_0:1871, sa6_90:1411, flange:"F16",       weight:76.3 },
+  { id:"AT751U", piston:300, da6_0:4308,  da6_90:3949,  sa6_0:2633, sa6_90:1984, flange:"F16",       weight:118  },
+  { id:"AT801U", piston:330, da6_0:5405,  da6_90:4955,  sa6_0:3299, sa6_90:2726, flange:"F16+F25",   weight:127  },
+  { id:"AT1001U",piston:420, da6_0:10007, da6_90:9173,  sa6_0:6122, sa6_90:4718, flange:"F16+F25+F30",weight:170 },
+];
+
+// Torque scaling factor vs pressure (relative to 6 bar)
+// Values interpolated from catalog tables
+function torqueAtPressure(torque6bar, pressure) {
+  const ratio = {
+    2.5: 0.417, 3.0: 0.500, 3.5: 0.583,
+    4.0: 0.667, 4.2: 0.700, 4.5: 0.750,
+    5.0: 0.833, 5.5: 0.917, 6.0: 1.000,
+    7.0: 1.167, 8.0: 1.333
+  };
+  const keys = Object.keys(ratio).map(Number);
+  const nearest = keys.reduce((a,b) => Math.abs(b-pressure) < Math.abs(a-pressure) ? b : a);
+  return torque6bar * ratio[nearest];
+}
+
+// ============================================================
+// TORQUE MODE
+// ============================================================
+let torqueMode = 1;
+
+function setTorqueMode(mode) {
+  torqueMode = mode;
+  [1,2,3].forEach(m => {
+    document.getElementById(`torque-mode-${m}`).style.display = m === mode ? 'block' : 'none';
+    document.getElementById(`mode-btn-${m}`).classList.toggle('active', m === mode);
+  });
+}
+
+document.getElementById('sf-preset').addEventListener('change', function() {
+  document.getElementById('sf-custom-field').style.display =
+    this.value === 'custom' ? 'block' : 'none';
+});
+
+// Torque estimation from process data (Mode 3)
+// Uses simplified empirical model — indicative only
+function estimateTorque() {
+  const dn = parseFloat(document.getElementById('valve-dn').value);
+  const dpDesign = parseFloat(document.getElementById('dp-design').value);
+  const seatType = document.getElementById('seat-type').value;
+  const fluidCat = document.getElementById('fluid-cat').value;
+  const stickiness = document.getElementById('stickiness').value;
+  const criticality = document.getElementById('criticality').value;
+
+  // Base torque: simplified formula T_base = k × DN² × ΔP
+  // k factor varies by seat type
+  const kSeat = { 'soft': 0.0004, 'metal': 0.0007, 'metal-stellite': 0.0010 };
+  const k = kSeat[seatType];
+  const T_base = k * Math.pow(dn, 2) * dpDesign;
+
+  // Fluid factor
+  const fluidF = {
+    'gas-clean': 0.85, 'liquid-clean': 1.0,
+    'liquid-viscous': 1.25, 'slurry': 1.5, 'steam': 1.1
+  };
+
+  // Stickiness factor
+  const stickyF = {
+    'frequent': 1.0, 'normal': 1.15,
+    'infrequent': 1.35, 'sticky': 1.6
+  };
+
+  // Application SF
+  const critF = {
+    'utility': 1.10, 'industrial': 1.25,
+    'oilgas': 1.40, 'esd': 1.60
+  };
+
+  // PST recommendation
+  const needsPST = criticality === 'esd' || criticality === 'oilgas' ||
+    stickiness === 'sticky' || stickiness === 'infrequent';
+  document.getElementById('pst-recommendation').style.display = needsPST ? 'block' : 'none';
+
+  const T_design = T_base * fluidF[fluidCat] * stickyF[stickiness] * critF[criticality];
+  return {
+    T_base: Math.round(T_base),
+    T_design: Math.round(T_design),
+    sf_total: (fluidF[fluidCat] * stickyF[stickiness] * critF[criticality]).toFixed(2),
+    needsPST
+  };
+}
+
+function configure() {
+  const pressure = parseFloat(document.getElementById('pressure').value);
+  const action = document.getElementById('action').value;
+  const temp = document.getElementById('temp').value;
+  const coating = document.getElementById('coating').value;
+  const atex = document.getElementById('atex').value;
+  const solenoid = document.getElementById('solenoid').value;
+  const lsb = document.getElementById('lsb').value;
+  const filter = document.getElementById('filter').value;
+  const positioner = document.getElementById('positioner').value;
+  const dn = document.getElementById('valve-dn').value;
+  const pc = document.getElementById('valve-pressure').value;
+  const vflange = document.getElementById('valve-flange').value;
+  const customer = document.getElementById('customer').value;
+  const tag = document.getElementById('tag').value;
+  const qty = document.getElementById('qty').value;
+  const notes = document.getElementById('notes').value;
+
+  // TORQUE RESOLUTION
+  let torqueRequired, torqueDesign, sf, sfLabel, needsPST = false, processData = null;
+
+  if (torqueMode === 1) {
+    torqueRequired = parseFloat(document.getElementById('torque-m1').value);
+    const sfPreset = document.getElementById('sf-preset').value;
+    sf = sfPreset === 'custom'
+      ? parseFloat(document.getElementById('sf-custom').value)
+      : parseFloat(sfPreset);
+    torqueDesign = torqueRequired * sf;
+    sfLabel = `×${sf} applied`;
+  } else if (torqueMode === 2) {
+    torqueDesign = parseFloat(document.getElementById('torque-m2').value);
+    torqueRequired = torqueDesign;
+    sf = 1.0;
+    sfLabel = 'SF included by manufacturer';
+  } else {
+    processData = estimateTorque();
+    needsPST = processData.needsPST;
+    torqueRequired = processData.T_base;
+    torqueDesign = processData.T_design;
+    sf = parseFloat(processData.sf_total);
+    sfLabel = `×${sf} (fluid × stickiness × application)`;
+  }
+
+  const isSA = action !== 'DA';
+
+  // SELECTION
+  let selected = null;
+  for (const m of MODELS) {
+    let avail;
+    if (action === 'DA') {
+      avail = torqueAtPressure(m.da6_0, pressure);
+    } else {
+      if (!m.sa6_0) continue;
+      avail = torqueAtPressure(m.sa6_0, pressure);
+    }
+    if (avail >= torqueDesign) {
+      selected = { model: m, availStart: avail };
+      selected.availEnd = action === 'DA'
+        ? torqueAtPressure(m.da6_90, pressure)
+        : torqueAtPressure(m.sa6_90, pressure);
+      break;
+    }
+  }
+
+  if (!selected) {
+    showError('Required torque exceeds maximum available. Contact ROBOSTI for special sizing.');
+    return;
+  }
+
+  const actionCode = action === 'DA' ? 'DA' : (action === 'FA' ? 'FA' : 'FO');
+  const tempCode = temp === 'ST' ? '' : ('-' + temp);
+  const atexCode = atex !== 'none' ? '-EX' : '';
+  const solCode = solenoid !== 'none' ? '-SOL' : '';
+  const code = `RBS-${selected.model.id}-${actionCode}${tempCode}${atexCode}${solCode}`;
+
+  const sfActual = selected.availStart / torqueRequired;
+
+  let warnings = [];
+  if (sfActual < 1.25 && torqueMode !== 2) {
+    warnings.push(`Effective safety factor ${sfActual.toFixed(2)} — below recommended 1.25. Consider next size up for critical applications.`);
+  }
+  if (atex !== 'none' && solenoid !== 'none' && !solenoid.includes('EX')) {
+    warnings.push('ATEX zone selected — ensure solenoid valve is ATEX rated');
+  }
+  if (action !== 'DA' && selected.availEnd < torqueRequired) {
+    warnings.push(`Spring return end torque (${selected.availEnd.toFixed(0)} Nm) below required — verify valve specs at 90°`);
+  }
+  if (needsPST) {
+    warnings.push('PST RECOMMENDED — Partial Stroke Test device advised for this application (ESD/SIL or high stickiness risk)');
+  }
+  if (torqueMode === 3) {
+    warnings.push('Torque estimated from process data — validate with valve manufacturer before ordering');
+  }
+
+  lastResult = {
+    selected, torqueRequired, torqueDesign, sf, sfLabel, sfActual, pressure,
+    action, actionCode, temp, coating, atex, solenoid, lsb, filter, positioner,
+    dn, pc, vflange, code, customer, tag, qty, notes, warnings,
+    torqueMode, processData, needsPST
+  };
+
+  renderResult(lastResult);
+}
+
+function renderResult(r) {
+  document.getElementById('empty-state').style.display = 'none';
+  const card = document.getElementById('result-card');
+  card.classList.add('show');
+
+  // Alert
+  const alertBox = document.getElementById('alert-box');
+  alertBox.innerHTML = r.warnings.map(w =>
+    `<div class="alert warn">⚠ ${w}</div>`
+  ).join('');
+
+  // Header
+  document.getElementById('r-model').textContent = r.selected.model.id;
+  document.getElementById('r-code').textContent = r.code;
+  document.getElementById('r-date').textContent = new Date().toLocaleDateString('en-GB') + ' — ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+
+  // Badges
+  const badges = [];
+  badges.push(`<span class="badge ok">CE</span>`);
+  if (r.atex !== 'none') badges.push(`<span class="badge ok">ATEX</span>`);
+  badges.push(`<span class="badge ok">ISO 5211</span>`);
+  badges.push(`<span class="badge">SF ${r.sfActual.toFixed(2)}</span>`);
+  badges.push(`<span class="badge">${r.temp}</span>`);
+  document.getElementById('r-badges').innerHTML = badges.join('');
+
+  // Specs
+  const specs = [
+    { k:'Actuator model', v: r.selected.model.id },
+    { k:'Piston diameter', v: r.selected.model.piston + ' mm' },
+    { k:'ISO 5211 flange', v: r.selected.model.flange },
+    { k:'Action', v: r.action === 'DA' ? 'Double acting' : r.action === 'FA' ? 'Spring return (FC)' : 'Spring return (FO)' },
+    { k:'Available torque (0°)', v: r.selected.availStart.toFixed(0) + ' Nm', hi: true },
+    { k:'Design torque', v: r.torqueDesign.toFixed(0) + ' Nm' },
+    { k:'Safety factor', v: r.sfLabel },
+    { k:'Supply pressure', v: r.pressure + ' bar' },
+    { k:'Actuator weight', v: r.selected.model.weight + ' kg' },
+  ];
+  document.getElementById('r-specs').innerHTML = specs.map(s =>
+    `<div class="spec-cell">
+      <div class="spec-key">${s.k}</div>
+      <div class="spec-val${s.hi?' highlight':''}">${s.v}</div>
+    </div>`
+  ).join('');
+
+  // Torque chart
+  const maxTorque = r.selected.availStart * 1.1;
+  const bars = [
+    { label: 'Required (valve)', val: r.torqueRequired, pct: r.torqueRequired/maxTorque*100, safe: false },
+    { label: 'Design (×SF)', val: r.torqueDesign, pct: r.torqueDesign/maxTorque*100, safe: false },
+    { label: 'Available (0°)', val: r.selected.availStart, pct: r.selected.availStart/maxTorque*100, safe: true },
+    { label: 'Available (90°)', val: r.selected.availEnd, pct: r.selected.availEnd/maxTorque*100, safe: r.selected.availEnd >= r.torqueRequired },
+  ];
+  document.getElementById('torque-chart').innerHTML = bars.map(b =>
+    `<div class="torque-row">
+      <div class="torque-label">${b.label}</div>
+      <div class="torque-bar-bg"><div class="torque-bar-fill${b.safe?' safe':''}" style="width:${Math.min(100,b.pct)}%"></div></div>
+      <div class="torque-val">${b.val.toFixed(0)} Nm</div>
+    </div>`
+  ).join('');
+
+  // Valve interface
+  const vflange = r.vflange === 'any' ? r.selected.model.flange.split('+')[0] : r.vflange;
+  const vRows = [
+    ['Valve type', valveType.charAt(0).toUpperCase() + valveType.slice(1) + ' valve'],
+    ['Nominal size', 'DN ' + r.dn],
+    ['Pressure class', r.pc],
+    ['ISO 5211 (actuator)', r.selected.model.flange],
+    ['Recommended connection', vflange],
+    ['Rotation', '90° quarter-turn'],
+    ['Fail position', r.action === 'FA' ? 'FAIL CLOSE' : r.action === 'FO' ? 'FAIL OPEN' : 'FAIL LAST (DA)'],
+  ];
+  document.getElementById('valve-info-rows').innerHTML = vRows.map(([k,v]) =>
+    `<div class="valve-row"><span>${k}</span><span>${v}</span></div>`
+  ).join('');
+
+  // Package
+  const pkg = [];
+  let itemN = 1;
+  pkg.push({ n:itemN++, code:`RBS-${r.selected.model.id}-${r.actionCode}`, name:'Rack & Pinion Actuator', spec:`${r.selected.model.piston}mm piston · ${r.action} · ISO 5211 ${r.selected.model.flange} · ${r.temp}` });
+  if (r.solenoid !== 'none') pkg.push({ n:itemN++, code:`RBS-SOL-${r.solenoid.replace(' ','')}`, name:'Solenoid Valve', spec:`${r.solenoid} · NAMUR · IP65${r.atex!=='none'?' ATEX':''}` });
+  if (r.lsb !== 'none') pkg.push({ n:itemN++, code:`RBS-LSB-${r.lsb.toUpperCase()}`, name:'Limit Switch Box', spec:`${r.lsb === 'mech' ? 'Mechanical' : r.lsb === 'elec' ? 'Electronic 4-20mA' : 'Mechanical ATEX'} · IP67 · NAMUR` });
+  if (r.filter !== 'none') pkg.push({ n:itemN++, code:`RBS-FRG-${r.filter.toUpperCase()}`, name:'Filter Regulator', spec:`${r.filter === 'std' ? 'Manual drain 1/4"' : r.filter === 'auto' ? 'Auto drain 3/8"' : 'With lubricator 3/8"'}` });
+  if (r.positioner !== 'none') pkg.push({ n:itemN++, code:`RBS-POS-${r.positioner.toUpperCase()}`, name:'Positioner', spec:`${r.positioner === 'ep' ? '4–20 mA' : '4–20 mA + HART'} · IP66` });
+
+  document.getElementById('r-package').innerHTML = pkg.map(p =>
+    `<tr>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--gray)">${String(p.n).padStart(2,'0')}</td>
+      <td class="td-code">${p.code}</td>
+      <td class="td-name">${p.name}</td>
+      <td class="td-spec">${p.spec}</td>
+    </tr>`
+  ).join('');
+}
+
+function showError(msg) {
+  document.getElementById('empty-state').style.display = 'none';
+  const card = document.getElementById('result-card');
+  card.classList.add('show');
+  document.getElementById('alert-box').innerHTML = `<div class="alert error">✗ ${msg}</div>`;
+  document.getElementById('r-model').textContent = 'ERROR';
+  document.getElementById('r-code').textContent = '';
+  document.getElementById('r-specs').innerHTML = '';
+  document.getElementById('torque-chart').innerHTML = '';
+  document.getElementById('valve-info-rows').innerHTML = '';
+  document.getElementById('r-package').innerHTML = '';
+  document.getElementById('r-badges').innerHTML = '';
+}
+
+function toggleQuote() {
+  if (!lastResult) return;
+  const sec = document.getElementById('quote-section');
+  sec.classList.toggle('show');
+  if (sec.classList.contains('show')) renderQuote();
+}
+
+function renderQuote() {
+  const r = lastResult;
+  const today = new Date().toLocaleDateString('en-GB');
+  const ref = 'RBS-' + Date.now().toString().slice(-6);
+
+  document.getElementById('quote-content').innerHTML = `
+    <div style="font-family:var(--mono);font-size:11px;color:var(--gray2);line-height:2.2">
+      <div><span style="color:var(--gray)">OFFER REF:</span> &nbsp; ${ref}</div>
+      <div><span style="color:var(--gray)">DATE:</span> &nbsp; ${today}</div>
+      <div><span style="color:var(--gray)">CUSTOMER:</span> &nbsp; ${r.customer || '—'}</div>
+      <div><span style="color:var(--gray)">TAG / REF:</span> &nbsp; ${r.tag || '—'}</div>
+      <div><span style="color:var(--gray)">QUANTITY:</span> &nbsp; ${r.qty} pcs</div>
+      <div><span style="color:var(--gray)">ITEM:</span> &nbsp; ${r.selected.model.id} — ${r.action} — ${r.temp}</div>
+      <div><span style="color:var(--gray)">CODE:</span> &nbsp; ${r.code}</div>
+      <div><span style="color:var(--gray)">VALIDITY:</span> &nbsp; 30 days from offer date</div>
+      <div><span style="color:var(--gray)">DELIVERY:</span> &nbsp; 4–6 weeks from order confirmation</div>
+      <div><span style="color:var(--gray)">INCOTERMS:</span> &nbsp; EXW Saronno (VA), Italy</div>
+      <div style="margin-top:8px"><span style="color:var(--gray)">NOTES:</span> &nbsp; ${r.notes || 'None'}</div>
+    </div>
+    <div style="margin-top:16px;padding:12px;background:var(--orange-dim);border:1px solid var(--orange);font-family:var(--mono);font-size:10px;color:var(--orange);letter-spacing:1px">
+      Price on request — contact roberto.alberio@nortekhendriks.com or +39 351 60 70 681
+    </div>
+  `;
+}
+
+function generatePDF() {
+  if (!lastResult) return;
+  const r = lastResult;
+  const today = new Date().toLocaleDateString('en-GB');
+
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <title>ROBOSTI — ${r.selected.model.id} Datasheet</title>
+  <style>
+    body{font-family:'IBM Plex Sans',Arial,sans-serif;background:#fff;color:#111;margin:40px;font-size:12px}
+    h1{font-size:28px;font-weight:700;letter-spacing:4px;margin-bottom:4px}
+    .orange{color:#d45a00}
+    .sub{font-size:10px;color:#666;letter-spacing:2px;margin-bottom:24px}
+    table{width:100%;border-collapse:collapse;margin:16px 0}
+    th{background:#0f0f0f;color:#fff;padding:8px 12px;font-size:9px;letter-spacing:2px;text-align:left}
+    td{padding:8px 12px;border-bottom:1px solid #eee;font-size:11px}
+    .code{font-family:monospace;color:#d45a00}
+    .section{margin:20px 0 8px;font-size:10px;color:#d45a00;letter-spacing:3px;text-transform:uppercase;font-weight:bold}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+    .cell{background:#f5f5f5;padding:12px;border-left:3px solid #d45a00}
+    .cell-k{font-size:9px;color:#666;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+    .cell-v{font-size:16px;font-weight:600}
+    footer{margin-top:40px;border-top:1px solid #eee;padding-top:12px;font-size:9px;color:#999;letter-spacing:1px}
+    @media print{body{margin:20px}}
+  </style></head><body>
+  <h1>ROB<span class="orange">O</span>STI — <span class="orange">${r.selected.model.id}</span></h1>
+  <div class="sub">PNEUMATIC RACK & PINION ACTUATOR — TECHNICAL DATASHEET · Generated ${today}</div>
+  <div class="code" style="font-size:13px;margin-bottom:20px">Product code: ${r.code}</div>
+
+  <div class="section">Technical specifications</div>
+  <div class="grid">
+    <div class="cell"><div class="cell-k">Actuator model</div><div class="cell-v">${r.selected.model.id}</div></div>
+    <div class="cell"><div class="cell-k">Piston diameter</div><div class="cell-v">${r.selected.model.piston} mm</div></div>
+    <div class="cell"><div class="cell-k">ISO 5211 flange</div><div class="cell-v">${r.selected.model.flange}</div></div>
+    <div class="cell"><div class="cell-k">Action type</div><div class="cell-v">${r.action}</div></div>
+    <div class="cell"><div class="cell-k">Supply pressure</div><div class="cell-v">${r.pressure} bar</div></div>
+    <div class="cell"><div class="cell-k">Available torque (0°)</div><div class="cell-v" style="color:#d45a00">${r.selected.availStart.toFixed(0)} Nm</div></div>
+    <div class="cell"><div class="cell-k">Available torque (90°)</div><div class="cell-v">${r.selected.availEnd.toFixed(0)} Nm</div></div>
+    <div class="cell"><div class="cell-k">Required torque</div><div class="cell-v">${r.torqueRequired} Nm</div></div>
+    <div class="cell"><div class="cell-k">Safety factor</div><div class="cell-v">${r.sfActual.toFixed(2)}</div></div>
+    <div class="cell"><div class="cell-k">Temperature range</div><div class="cell-v">${r.temp === 'ST' ? '−40 / +80°C' : r.temp === 'HT' ? '−15 / +150°C' : '−60 / +80°C'}</div></div>
+    <div class="cell"><div class="cell-k">Actuator weight</div><div class="cell-v">${r.selected.model.weight} kg</div></div>
+    <div class="cell"><div class="cell-k">Coating</div><div class="cell-v">${r.coating}</div></div>
+  </div>
+
+  <div class="section">Valve interface</div>
+  <table>
+    <tr><th>Parameter</th><th>Value</th></tr>
+    <tr><td>Valve type</td><td>${valveType}</td></tr>
+    <tr><td>Nominal size</td><td>DN ${r.dn}</td></tr>
+    <tr><td>Pressure class</td><td>${r.pc}</td></tr>
+    <tr><td>ISO 5211 actuator flange</td><td>${r.selected.model.flange}</td></tr>
+    <tr><td>Rotation</td><td>90° quarter-turn</td></tr>
+    <tr><td>Fail position</td><td>${r.action === 'FA' ? 'FAIL CLOSE' : r.action === 'FO' ? 'FAIL OPEN' : 'FAIL LAST'}</td></tr>
+    ${r.tag ? `<tr><td>Tag / Reference</td><td>${r.tag}</td></tr>` : ''}
+    ${r.notes ? `<tr><td>Notes</td><td>${r.notes}</td></tr>` : ''}
+  </table>
+
+  <div class="section">Automation package</div>
+  <table>
+    <tr><th>#</th><th>Code</th><th>Component</th><th>Specification</th></tr>
+    <tr><td>01</td><td class="code">RBS-${r.selected.model.id}-${r.actionCode}</td><td>Rack & Pinion Actuator</td><td>${r.selected.model.piston}mm · ${r.action} · ${r.temp}</td></tr>
+    ${r.solenoid !== 'none' ? `<tr><td>02</td><td class="code">RBS-SOL</td><td>Solenoid Valve</td><td>${r.solenoid} · NAMUR</td></tr>` : ''}
+    ${r.lsb !== 'none' ? `<tr><td>0${r.solenoid!=='none'?3:2}</td><td class="code">RBS-LSB</td><td>Limit Switch Box</td><td>IP67 · NAMUR</td></tr>` : ''}
+    ${r.filter !== 'none' ? `<tr><td>0x</td><td class="code">RBS-FRG</td><td>Filter Regulator</td><td>${r.filter}</td></tr>` : ''}
+    ${r.positioner !== 'none' ? `<tr><td>0x</td><td class="code">RBS-POS</td><td>Positioner</td><td>${r.positioner}</td></tr>` : ''}
+  </table>
+
+  <div class="section">Certifications</div>
+  <p style="font-size:11px;color:#555;line-height:1.8">
+    CE (2014/68/EU PED) · ISO 5211 · EN 15714-2 · ISO 9001:2015
+    ${r.atex !== 'none' ? '· ATEX 2014/34/EU · IECEx' : ''}
+    ${r.temp === 'HT' ? '· High temperature version HT' : r.temp === 'LLT2' ? '· Low temperature version LLT2' : ''}
+  </p>
+
+  <footer>
+    ROBOSTI Industrial Systems · roberto.alberio@nortekhendriks.com · +39 351 60 70 681 · robosti.com<br>
+    Specifications subject to change without notice. This document is generated automatically by the ROBOSTI configurator.
+    Customer: ${r.customer || 'N/A'} · Date: ${today}
+  </footer>
+  <script>window.print();<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+function generateQuotePDF() {
+  if (!lastResult) return;
+  const r = lastResult;
+  const today = new Date().toLocaleDateString('en-GB');
+  const ref = 'RBS-' + Date.now().toString().slice(-6);
+
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+  <title>ROBOSTI — Offer ${ref}</title>
+  <style>
+    body{font-family:'IBM Plex Sans',Arial,sans-serif;background:#fff;color:#111;margin:40px;font-size:12px}
+    h1{font-size:24px;font-weight:700;letter-spacing:4px}
+    .orange{color:#d45a00}
+    .sub{font-size:10px;color:#666;letter-spacing:2px;margin-bottom:24px}
+    table{width:100%;border-collapse:collapse;margin:16px 0}
+    th{background:#0f0f0f;color:#fff;padding:8px 12px;font-size:9px;letter-spacing:2px;text-align:left}
+    td{padding:8px 12px;border-bottom:1px solid #eee}
+    .section{margin:20px 0 8px;font-size:10px;color:#d45a00;letter-spacing:3px;font-weight:bold;text-transform:uppercase}
+    .price-box{background:#f9f9f9;border:2px solid #0f0f0f;padding:20px;text-align:center;margin:20px 0}
+    .conditions{font-size:10px;color:#666;line-height:1.8}
+    footer{margin-top:40px;border-top:1px solid #eee;padding-top:12px;font-size:9px;color:#999}
+  </style></head><body>
+  <h1>ROB<span class="orange">O</span>STI</h1>
+  <div class="sub">COMMERCIAL OFFER · ${ref} · ${today}</div>
+
+  <div class="section">Customer</div>
+  <table>
+    <tr><td width="200"><strong>Company</strong></td><td>${r.customer || '—'}</td></tr>
+    <tr><td><strong>Tag / Reference</strong></td><td>${r.tag || '—'}</td></tr>
+    <tr><td><strong>Quantity</strong></td><td>${r.qty} pcs</td></tr>
+    <tr><td><strong>Notes</strong></td><td>${r.notes || '—'}</td></tr>
+  </table>
+
+  <div class="section">Offered item</div>
+  <table>
+    <tr><th>Code</th><th>Description</th><th>Qty</th></tr>
+    <tr>
+      <td><strong>${r.code}</strong></td>
+      <td>ROBOSTI ${r.selected.model.id} — Pneumatic rack & pinion actuator ${r.action} · DN ${r.dn} ${r.pc} · ${r.temp} · ${r.coating}
+      ${r.solenoid !== 'none' ? '<br>+ Solenoid valve ' + r.solenoid + ' NAMUR' : ''}
+      ${r.lsb !== 'none' ? '<br>+ Limit switch box IP67 NAMUR' : ''}
+      ${r.filter !== 'none' ? '<br>+ Filter regulator' : ''}
+      ${r.positioner !== 'none' ? '<br>+ Positioner ' + r.positioner : ''}
+      </td>
+      <td>${r.qty}</td>
+    </tr>
+  </table>
+
+  <div class="section">Technical summary</div>
+  <table>
+    <tr><td>Available torque (0°)</td><td><strong>${r.selected.availStart.toFixed(0)} Nm</strong></td><td>Required</td><td><strong>${r.torqueRequired} Nm</strong></td></tr>
+    <tr><td>Safety factor</td><td><strong>${r.sfActual.toFixed(2)}</strong></td><td>ISO 5211</td><td><strong>${r.selected.model.flange}</strong></td></tr>
+  </table>
+
+  <div class="price-box">
+    <div style="font-size:11px;color:#666;letter-spacing:2px;margin-bottom:8px">NET PRICE</div>
+    <div style="font-size:28px;font-weight:700;color:#d45a00">On request</div>
+    <div style="font-size:10px;color:#999;margin-top:8px">Contact: roberto.alberio@nortekhendriks.com · +39 351 60 70 681</div>
+  </div>
+
+  <div class="section">Commercial conditions</div>
+  <div class="conditions">
+    Offer validity: 30 days from offer date<br>
+    Delivery: 4–6 weeks from receipt of confirmed order<br>
+    Incoterms: EXW Saronno (VA), Italy<br>
+    Payment: 50% advance, 50% before shipment (TT)<br>
+    Warranty: 12 months from delivery date
+  </div>
+
+  <footer>
+    ROBOSTI Industrial Systems · Nortek Hendriks · roberto.alberio@nortekhendriks.com · +39 351 60 70 681 · robosti.com<br>
+    This offer is subject to ROBOSTI standard terms and conditions. Offer ref: ${ref}
+  </footer>
+  <script>window.print();<\/script>
+  </body></html>`);
+  win.document.close();
 }
 </script>
-
 </body>
 </html>
